@@ -20,7 +20,59 @@ import sys
 import re
 import datetime
 from nltk.corpus import stopwords
+from gensim import corpora, models, similarities
 
+def isDate(datestring):
+    """Match datetime"""
+    datetimeFormat = ['%y-%m-%d','%m/%d/%y','%m/%d','%d-%m-%y','%m-%d','%m-%d-%y',\
+                      '%d/%m/%y','%d.%m.%y'] # more format can be add here
+    Flag = False
+    for pattern in datetimeFormat:
+        try:
+            if '-' in datestring:                           # date range
+                idx = datestring.index('-')                 # assume that date range will not use mm-dd format  
+                startdate = datestring[:idx]
+                enddate = datestring[idx+1:]
+                datetime.datetime.strptime(startdate, pattern)
+                datetime.datetime.strptime(enddate, pattern)
+            else:
+                datetime.datetime.strptime(datestring, pattern)
+            return True
+        except ValueError:
+            continue
+    return Flag
+                
+def isCode(codestring):
+    """Match coupon code"""
+    codeFormat = ['\w*\d+\w+']			# more format can be add here
+    Flag = False
+    for pattern in codeFormat:
+        try:
+            if codestring == re.match(pattern,codestring).group():
+                return True
+        except:    
+            continue
+    return Flag
+        
+def isNum(numString):
+    """Match numeric string"""
+    if '.' in numString:
+        idx = numString.index('.')
+        return numString[:idx].isdigit() and numString[idx+1:].isdigit()
+    else:
+        return numString.isdigit()
+            
+def isURL(urlString):
+    """Match URL string"""
+    urlFormat = ['\w+\.\w+']			# more format can be add here
+    Flag = False
+    for pattern in urlFormat:
+        try:
+            if re.match(pattern,urlString).group():
+                return True
+        except:    
+            continue
+    return Flag
 
 def preprocess(line):
     """Pre-process line into tokens"""
@@ -44,6 +96,14 @@ def preprocess(line):
             while len(token)>1 and token[-1] in symbols:     # remove symbols at the end
                 token = token[:-1]
             if token:
+                if isNum(token):
+                    token = 'NUM'
+                elif isDate(token):
+                    token = 'DATE'
+                elif isCode(token):
+                    token = 'CODE'
+                elif isURL(token):
+                    token = 'URL'
                 newtk.append(token)
     return newtk
 
@@ -165,6 +225,9 @@ if __name__=='__main__':
     ReverseIndex = {}		# key: term  value: list of docID
     guitar = []			# list guitar types
     
+    docs = []
+    
+
     fp = open(filename,'r')
     docID = 1
     lastline = ''
@@ -173,13 +236,23 @@ if __name__=='__main__':
             continue
         tokens = preprocess(line)
         if tokens:
-    	    DocsTable[docID] = tokens
-    	    reverseIndex(tokens,docID)
-    	    docID += 1
-    	lastline = line
-    fp.close()
-    writeDict('Docs.txt', DocsTable)
-    writeDict('ReverseIndex.txt', ReverseIndex)
-    writeDict('TF.txt', TF)
-    print guitar
+            docs.append(tokens)
     
+#           DocsTable[docID] = tokens
+#           reverseIndex(tokens,docID)
+#           docID += 1
+#    	lastline = line
+    fp.close()
+    dictionary = corpora.Dictionary(docs)
+    print dictionary
+    dictionary.save('deals.dict')	# store the dictionary, for future reference
+    corpus = [dictionary.doc2bow(text) for text in docs]
+    corpora.MmCorpus.serialize('deals.mm', corpus) # store to disk, for later use
+    corpora.BleiCorpus.serialize('deals.lda-c', corpus)
+    
+    
+#    writeDict('Docs.txt', DocsTable)
+#    writeDict('ReverseIndex.txt', ReverseIndex)
+#    writeDict('TF.txt', TF)
+    print guitar
+   

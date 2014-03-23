@@ -27,23 +27,32 @@ sm_corpus_tfidf = gensim.matutils.corpus2csc(corpus_tfidf)
 
 # k-means clustering
 # the rule of thumb of choosing k is square-root of n
-labeler = KMeans(k=3)
+labeler = KMeans(k=100)
 # note: Kmeans currently only works with CSR type sparse matrix
 labeler.fit(sm_corpus_tfidf.tocsr()) 
 
-# print cluster assignments for each row
+# write cluster assignments for each row
+fp = open('cluster_assignments.txt','w')
+fp.write('row : label\n')
 for (row, label) in enumerate(labeler.labels_):
-    print "row %d has label %d"%(row, label)
+    fp.write(" %d : %d\n" % (row, label))
+fp.close()
 
 
 ###############################################################################
 # topic modeling
 # Latent Semantic Analysis
-lsi = models.LsiModel(corpus_tfidf, id2word=dictionary, num_topics=100)
+lsi = models.LsiModel(corpus_tfidf, id2word=dictionary, num_topics=50)
 corpus_lsi = lsi[corpus_tfidf]
-print lsi.print_topics(2)
+topics = lsi.show_topics()
+fp = open('topics.txt','w')
+for topic in topics:
+    fp.write(topic)
+    fp.write('\n')
+fp.close()
+
 
 # Latent Dirichlet Allocation
 lda = gensim.models.ldamodel.LdaModel(corpus=corpus_tfidf, id2word=dictionary, \
-num_topics=100, update_every=1, chunksize=10000, passes=1)
+num_topics=50, update_every=1, chunksize=10000, passes=1)
 lda.print_topics(20)

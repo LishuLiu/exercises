@@ -88,7 +88,7 @@ def preprocess(line):
     tk = nltk.word_tokenize(line)
     porter = nltk.PorterStemmer()
     lmtzr = nltk.stem.wordnet.WordNetLemmatizer()
-    # English stopwords should be removed, exclude 'off'
+    # English stopwords should be removed, exclude 'off' 
     removelist = stopwords.words('english')
     removelist.remove('off')
     # '$' and '%' kept on purpose

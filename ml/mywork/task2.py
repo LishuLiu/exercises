@@ -5,7 +5,10 @@ The objective of this task is to explore the structure of the deals.txt file.
 Building on task 1, we now want to start to understand the relationships to help us understand:
 
 1. What groups exist within the deals?
+A: Check cluster_assignment.txt
+
 2. What topics exist within the deals?
+A: Check topics.txt
 
 """
 import gensim

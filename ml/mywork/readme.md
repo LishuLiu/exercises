@@ -41,6 +41,22 @@ python task3.py<br />
 **Output:**<br />
 *task3.out* - stdout by task3
 
+task3_followup.py
+--------
+
+Automatic feature selection, classifier training and retrains. 
+**Usage:** <br />
+python task3_followup.py good_data bad_data test_data model_name<br />
+**Output:**<br />
+*task3.log* - log file by task3_followup (lv=debug)<br />
+*test_deals.predict* - predicted labels of test file<br />
+(Below two will be created if split flag is set to True)<br />
+*good_test_deals* - predicted good data from test file<br />
+*bad_test_deals* - predicted bad data from test file<br />
+*feature.pkl* - feature saved<br />
+*..model.pkl* - model saved<br />
+
+
 
 [Dictionary]:http://radimrehurek.com/gensim/corpora/dictionary.html#gensim.corpora.dictionary.Dictionary
 [Matrix Market]:http://math.nist.gov/MatrixMarket/formats.html

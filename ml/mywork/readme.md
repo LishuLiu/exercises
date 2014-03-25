@@ -44,7 +44,7 @@ python task3.py<br />
 task3_followup.py
 --------
 
-Automatic feature selection, classifier training and retrains. 
+Automatic feature selection, classifier training and re-trains. <br />
 **Usage:** <br />
 python task3_followup.py good_data bad_data test_data model_name<br />
 **Output:**<br />
